@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import errorHandlers from "../middlewares/error.js";
 import router from "./route.js";
+import dotenv from "dotenv";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(
   }),
 );
 app.use(cookieParser());
+dotenv.config();
 
 // Api Endpoint
 app.use(router);

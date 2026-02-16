@@ -1,8 +1,20 @@
 import express from "express";
-import { getMeController } from "./auth-controller.js";
+import {
+  getMeController,
+  registerController,
+  verifiedEmailController,
+} from "./auth-controller.js";
+import { validate } from "../../middlewares/validate.js";
+import { registerSchema } from "./auth-validation.js";
 
 const router = express.Router();
 
 router.get("/", getMeController);
+
+if (process.env.NODE_ENV === "development") {
+  router.post("/register", validate(registerSchema), registerController);
+}
+
+router.post("/verify-email", verifiedEmailController);
 
 export default router;

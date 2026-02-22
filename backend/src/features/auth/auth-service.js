@@ -3,9 +3,14 @@ import ApiError from "../../middlewares/api-error.js";
 import bcrypt from "bcrypt";
 import { generateVerificationToken } from "../../utils/generate-random-token.js";
 import { emailVerificationSender } from "./email-verification/email-verification-service.js";
+import jwtUtils from "../../utils/jwt.js";
 
-export const getMe = async () => {
-  const users = await prisma.user.findMany();
+export const getMe = async (userId) => {
+  const users = await prisma.user.findFirst({
+    where: {
+      id: userId
+    }
+  });
 
   return users;
 };
@@ -62,3 +67,36 @@ export const registerService = async (body) => {
 
   return createdUser;
 };
+
+export const loginService = async (body) => {
+  const { email, password } = body;
+
+  const isUserExist = await prisma.user.findFirst({
+    where: {
+      email: email
+    }
+  })
+
+  if (!isUserExist) {
+    throw new ApiError(400, 'Invalid email or password');
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, isUserExist.password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(400, 'Invalid email or password')
+  }
+
+  const payload = {
+    username: isUserExist.username,
+    email: isUserExist.email,
+    userId: isUserExist.id
+  }
+
+  const accessToken = jwtUtils.generateAccessToken(payload)
+  const refreshToken = jwtUtils.generateRefreshToken(isUserExist.id)
+
+  // TODO: create refresh token ke db
+
+  return { accessToken, refreshToken }
+}

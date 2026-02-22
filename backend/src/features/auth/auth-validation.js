@@ -14,3 +14,14 @@ export const registerSchema = Joi.object({
     .required(),
   description: Joi.string().optional(),
 });
+
+export const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string()
+    .min(8)
+    .pattern(passwordRegex)
+    .message(
+      "Password must contain uppercase, lowercase, number and special character",
+    )
+    .required(),
+});

@@ -1,4 +1,4 @@
-import { getMe, registerService } from "./auth-service.js";
+import { getMe, loginService, registerService } from "./auth-service.js";
 import { verifiedEmail } from "./email-verification/email-verification-service.js";
 
 export const getMeController = async (req, res, next) => {
@@ -27,3 +27,28 @@ export const verifiedEmailController = async (req, res, next) => {
     next(error);
   }
 };
+
+export const loginController = async (req, res, next) => {
+  try {
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    };
+    const { accessToken, refreshToken } = await loginService(req.body);
+
+    res.cookie("refresh_token", refreshToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Login berhasil",
+      data: { token: accessToken },
+    });
+  } catch (error) {
+    next(error)
+  }
+} 

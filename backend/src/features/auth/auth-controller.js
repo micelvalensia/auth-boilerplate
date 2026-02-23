@@ -1,4 +1,9 @@
-import { getMe, loginService, registerService } from "./auth-service.js";
+import {
+  getMe,
+  loginService,
+  refreshTokenService,
+  registerService,
+} from "./auth-service.js";
 import { verifiedEmail } from "./email-verification/email-verification-service.js";
 
 export const getMeController = async (req, res, next) => {
@@ -49,6 +54,26 @@ export const loginController = async (req, res, next) => {
       data: { token: accessToken },
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
-} 
+};
+
+export const refreshTokenController = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.refresh_token;
+
+    if (!refreshToken) {
+      throw new ApiError(401, "Refresh token tidak ditemukan");
+    }
+
+    const { token } = await refreshTokenService(refreshToken);
+
+    res.status(200).json({
+      success: true,
+      message: "Token berhasil diperbarui",
+      data: { token },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

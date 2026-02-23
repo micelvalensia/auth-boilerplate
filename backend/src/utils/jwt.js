@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 
 const generateAccessToken = (payload) => {
-  console.log(payload);
   return jwt.sign({ payload }, process.env.JWT_ACCESS_SECRET, {
     expiresIn: "15m",
   });

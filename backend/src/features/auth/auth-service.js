@@ -101,10 +101,58 @@ export const loginService = async (body) => {
     userId: isUserExist.id,
   };
 
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
+
   const accessToken = jwtUtils.generateAccessToken(payload);
   const refreshToken = jwtUtils.generateRefreshToken(isUserExist.id);
 
   // TODO: create refresh token ke db
+  await prisma.refreshToken.create({
+    data: {
+      token: refreshToken,
+      expires_at: expiresAt,
+      user_id: isUserExist.id,
+    },
+  });
 
   return { accessToken, refreshToken };
+};
+
+export const refreshTokenService = async (refreshToken) => {
+  const decode = jwtUtils.verifyRefreshToken(refreshToken);
+
+  if (!decode) {
+    throw new ApiError(400, "Refresh token tidak valid");
+  }
+
+  const storedToken = await prisma.refreshToken.findUnique({
+    where: {
+      token: refreshToken,
+    },
+    include: {
+      user: true,
+    },
+  });
+
+  if (!storedToken) {
+    throw new ApiError(400, "Refresh token tidak valid");
+  }
+
+  if (new Date() > storedToken.expires_at) {
+    await prisma.refreshToken.delete({
+      where: { id: storedToken.id },
+    });
+    throw new ApiError(401, "Refresh token sudah expired");
+  }
+
+  const payload = {
+    username: storedToken.user.username,
+    email: storedToken.user.email,
+    userId: storedToken.user.id,
+  };
+
+  const newAccessToken = jwtUtils.generateAccessToken(payload);
+
+  return { token: newAccessToken };
 };

@@ -2,6 +2,7 @@ import express from "express";
 import {
   getMeController,
   loginController,
+  refreshTokenController,
   registerController,
   verifiedEmailController,
 } from "./auth-controller.js";
@@ -16,6 +17,7 @@ if (process.env.NODE_ENV === "development") {
   router.post("/register", validate(registerSchema), registerController);
 }
 router.post("/login", validate(loginSchema), loginController);
+router.post("/refresh-token", refreshTokenController);
 router.post("/verify-email", verifiedEmailController);
 
 export default router;

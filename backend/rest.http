@@ -9,3 +9,16 @@ Content-Type: application/json
 }
 ###
 POST http://localhost:4230/auth/verify-email?token=7fdc1078449e8a2a1a3c56984073a143be6446e248d651d470ea3f758739b7c
+
+###
+POST http://localhost:4230/auth/login
+Content-Type: application/json
+
+{
+    "email": "gamingvalorant590@gmail.com",
+    "password": "P@nasonic22"
+}
+
+###
+GET http://localhost:4230/tes/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJuYW1lIjoiTWljZWwgRG9hbmdzIiwiZW1haWwiOiJnYW1pbmd2YWxvcmFudDU5MEBnbWFpbC5jb20iLCJ1c2VySWQiOjF9LCJpYXQiOjE3NzE4MDgwODAsImV4cCI6MTc3MTgwODk4MH0.dlDytizKvl11b0pnflPEXBwo2B0YS2pnCEQpVk57yNk

@@ -1,15 +1,24 @@
+import ApiError from "../../middlewares/api-error.js";
 import {
   getMe,
   loginService,
+  logoutService,
   refreshTokenService,
   registerService,
 } from "./auth-service.js";
 import { verifiedEmail } from "./email-verification/email-verification-service.js";
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  path: "/",
+};
+
 export const getMeController = async (req, res, next) => {
   const result = await getMe();
 
-  res.send(result);
+  res.status(200).json({ data: result });
 };
 
 export const registerController = async (req, res, next) => {
@@ -35,12 +44,6 @@ export const verifiedEmailController = async (req, res, next) => {
 
 export const loginController = async (req, res, next) => {
   try {
-    const cookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    };
     const { accessToken, refreshToken } = await loginService(req.body);
 
     res.cookie("refresh_token", refreshToken, {
@@ -72,6 +75,23 @@ export const refreshTokenController = async (req, res, next) => {
       success: true,
       message: "Token berhasil diperbarui",
       data: { token },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logoutController = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.refresh_token;
+
+    await logoutService(refreshToken);
+
+    res.clearCookie("refresh_token", cookieOptions);
+
+    res.status(200).json({
+      success: true,
+      message: "Logout berhasil",
     });
   } catch (error) {
     next(error);

@@ -1,7 +1,5 @@
+import { SignInContent } from "@/domain/auth/page/sign-in-content";
+
 export default function SignInPage() {
-  return (
-    <div className="">
-      <div className="">Hello World</div>
-    </div>
-  );
+  return <SignInContent />;
 }

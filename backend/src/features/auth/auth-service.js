@@ -107,7 +107,6 @@ export const loginService = async (body) => {
   const accessToken = jwtUtils.generateAccessToken(payload);
   const refreshToken = jwtUtils.generateRefreshToken(isUserExist.id);
 
-  // TODO: create refresh token ke db
   await prisma.refreshToken.create({
     data: {
       token: refreshToken,
@@ -155,4 +154,18 @@ export const refreshTokenService = async (refreshToken) => {
   const newAccessToken = jwtUtils.generateAccessToken(payload);
 
   return { token: newAccessToken };
+};
+
+export const logoutService = async (refreshToken) => {
+  if (!refreshToken) {
+    throw new ApiError(400, "Refresh token tidak ditemukan");
+  }
+
+  await prisma.refreshToken.deleteMany({
+    where: {
+      token: refreshToken,
+    },
+  });
+
+  return { message: "Logout berhasil" };
 };

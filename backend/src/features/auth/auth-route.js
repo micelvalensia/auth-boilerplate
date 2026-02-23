@@ -2,6 +2,7 @@ import express from "express";
 import {
   getMeController,
   loginController,
+  logoutController,
   refreshTokenController,
   registerController,
   verifiedEmailController,
@@ -19,5 +20,6 @@ if (process.env.NODE_ENV === "development") {
 router.post("/login", validate(loginSchema), loginController);
 router.post("/refresh-token", refreshTokenController);
 router.post("/verify-email", verifiedEmailController);
+router.post("/logout", logoutController);
 
 export default router;

@@ -7,7 +7,7 @@ import { useAuth } from "../hooks/useAuth";
 export function ProtectedRoute({ children }: PropsWithChildren) {
   const router = useRouter();
 
-  const { authChecked, isLoading, isLoggedIn, user } = useAuth();
+  const { authChecked, isLoading, isLoggedIn } = useAuth();
 
   useEffect(() => {
     if (!authChecked || isLoading) return;

@@ -1,4 +1,8 @@
-export const emailVerifTemplateHTML = (username, verificationLink, email) => {
+export const emailVerifTemplateHTML = (
+  username: string,
+  verificationLink: string,
+  email: string,
+) => {
   return `
     <!DOCTYPE html>
     <html lang="en">

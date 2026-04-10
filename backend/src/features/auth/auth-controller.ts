@@ -1,4 +1,5 @@
 import ApiError from "../../middlewares/api-error.js";
+import { AuthRequest } from "../../middlewares/auth.js";
 import {
   getMe,
   loginService,
@@ -7,21 +8,30 @@ import {
   registerService,
 } from "./auth-service.js";
 import { verifiedEmail } from "./email-verification/email-verification-service.js";
+import { Request, Response, NextFunction } from "express";
 
 const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
+  sameSite: "lax" as const,
   path: "/",
 };
 
-export const getMeController = async (req, res, next) => {
-  const result = await getMe();
+export const getMeController = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  const result = await getMe(req.user?.userId!);
 
   res.status(200).json({ data: result });
 };
 
-export const registerController = async (req, res, next) => {
+export const registerController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const result = await registerService(req.body);
 
@@ -31,18 +41,28 @@ export const registerController = async (req, res, next) => {
   }
 };
 
-export const verifiedEmailController = async (req, res, next) => {
+export const verifiedEmailController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { token } = req.query;
-    await verifiedEmail(token);
+    await verifiedEmail(token as string);
 
     res.status(200).json({ success: true, message: "OK" });
   } catch (error) {
     next(error);
+  } finally {
+    res.redirect("http://localhost:3000/sign-in");
   }
 };
 
-export const loginController = async (req, res, next) => {
+export const loginController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { accessToken, refreshToken } = await loginService(req.body);
 
@@ -61,7 +81,11 @@ export const loginController = async (req, res, next) => {
   }
 };
 
-export const refreshTokenController = async (req, res, next) => {
+export const refreshTokenController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const refreshToken = req.cookies.refresh_token;
 
@@ -81,7 +105,11 @@ export const refreshTokenController = async (req, res, next) => {
   }
 };
 
-export const logoutController = async (req, res, next) => {
+export const logoutController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const refreshToken = req.cookies.refresh_token;
 

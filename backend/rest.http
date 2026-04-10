@@ -2,8 +2,8 @@ POST http://localhost:4230/auth/register
 Content-Type: application/json
 
 {
-    "username": "Micel Doangs",
-    "email": "gamingvalorant590@gmail.com",
+    "username": "Micelnih",
+    "email": "pglsmid.itsysdev@id.panasonic.com",
     "password": "P@nasonic22",
     "description": "ga ada males buat deskripsi"
 }
@@ -15,7 +15,7 @@ POST http://localhost:4230/auth/login
 Content-Type: application/json
 
 {
-    "email": "gamingvalorant590@gmail.com",
+    "email": "pglsmid.itsysdev@id.panasonic.com",
     "password": "P@nasonic22"
 }
 

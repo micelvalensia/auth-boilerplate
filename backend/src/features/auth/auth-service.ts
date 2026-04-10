@@ -5,8 +5,8 @@ import { generateVerificationToken } from "../../utils/generate-random-token.js"
 import { emailVerificationSender } from "./email-verification/email-verification-service.js";
 import jwtUtils from "../../utils/jwt.js";
 
-export const getMe = async (userId = 1) => {
-  const users = await prisma.user.findFirst({
+export const getMe = async (userId: number) => {
+  const user = await prisma.user.findFirst({
     where: {
       id: userId,
     },
@@ -20,10 +20,15 @@ export const getMe = async (userId = 1) => {
     },
   });
 
-  return users;
+  return user;
 };
 
-export const registerService = async (body) => {
+export const registerService = async (body: {
+  username: string;
+  password: string;
+  description: string;
+  email: string;
+}) => {
   const { username, password, description, email } = body;
 
   const isEmailUserExist = await prisma.user.findFirst({
@@ -76,8 +81,12 @@ export const registerService = async (body) => {
   return createdUser;
 };
 
-export const loginService = async (body) => {
+export const loginService = async (body: {
+  email: string;
+  password: string;
+}) => {
   const { email, password } = body;
+  console.log(email);
 
   const isUserExist = await prisma.user.findFirst({
     where: {
@@ -87,6 +96,10 @@ export const loginService = async (body) => {
 
   if (!isUserExist) {
     throw new ApiError(400, "Invalid email or password");
+  }
+
+  if (!isUserExist.email_verified_at) {
+    throw new ApiError(400, "Email Not verivied yet");
   }
 
   const isPasswordValid = await bcrypt.compare(password, isUserExist.password);
@@ -118,7 +131,7 @@ export const loginService = async (body) => {
   return { accessToken, refreshToken };
 };
 
-export const refreshTokenService = async (refreshToken) => {
+export const refreshTokenService = async (refreshToken: string) => {
   const decode = jwtUtils.verifyRefreshToken(refreshToken);
 
   if (!decode) {

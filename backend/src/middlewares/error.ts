@@ -1,11 +1,17 @@
+import { NextFunction, Request, Response } from "express";
 import { logger } from "../config/logger.js";
+import ApiError from "./api-error.js";
 
-export default (err, req, res, next) => {
+export default (
+  err: ApiError,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
 
   logger.error("Error", { error: { statusCode, message, stack: err.stack } });
-
   res.status(statusCode).json({
     success: false,
     message,

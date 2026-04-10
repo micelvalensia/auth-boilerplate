@@ -4,7 +4,10 @@ import { sendEmail } from "../../../utils/email-sender.js";
 import { emailVerifTemplateHTML } from "./template.js";
 import crypto from "crypto";
 
-export const emailVerificationSender = async (user, verificationToken) => {
+export const emailVerificationSender = async (
+  user: { username: string; email: string },
+  verificationToken: string,
+) => {
   const { username, email } = user;
 
   const verificationLink = `${process.env.BASE_URL}/auth/verify-email?token=${verificationToken}`;
@@ -23,7 +26,7 @@ export const emailVerificationSender = async (user, verificationToken) => {
   });
 };
 
-export const verifiedEmail = async (verificationToken) => {
+export const verifiedEmail = async (verificationToken: string) => {
   const hashedToken = crypto
     .createHash("sha256")
     .update(verificationToken)
@@ -46,7 +49,7 @@ export const verifiedEmail = async (verificationToken) => {
     throw new ApiError(400, "Token expired");
   }
 
-  if (tokenRecord.user.emailVerifiedAt) {
+  if (tokenRecord.user.email_verified_at) {
     throw new ApiError(400, "Email already verified");
   }
 

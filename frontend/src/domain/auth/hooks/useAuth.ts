@@ -34,7 +34,7 @@ export const useAuth = () => {
     (getMe.isSuccess || getMe.isError || (!token && refreshMutation.isError));
 
   return {
-    user: getMe.data?.user ?? null,
+    user: getMe.data ?? null,
     isLoggedIn: !!getMe.data,
     isLoading: getMe.isLoading || refreshMutation.isPending,
     // mustChangePassword: getMe.data?.mustChangePassword ?? false,

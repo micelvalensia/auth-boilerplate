@@ -1,5 +1,8 @@
-export const validate = (schema, property = "body") => {
-  return (req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+import { Schema } from "joi";
+
+export const validate = (schema: Schema, property = "body") => {
+  return (req: Request, res: Response, next: NextFunction) => {
     const { error, value } = schema.validate(req[property], {
       abortEarly: false,
       allowUnknown: false,
@@ -19,7 +22,6 @@ export const validate = (schema, property = "body") => {
       });
     }
 
-    // overwrite request with cleaned value
     req[property] = value;
 
     next();
